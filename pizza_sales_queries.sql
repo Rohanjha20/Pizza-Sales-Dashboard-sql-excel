@@ -1,91 +1,63 @@
-PIZZA SALES SQL QUERIES
-A. KPI’s
-1. Total Revenue:
-SELECT SUM(total_price) AS Total_Revenue FROM pizza_sales;
- 
-2. Average Order Value
-SELECT (SUM(total_price) / COUNT(DISTINCT order_id)) AS Avg_order_Value FROM pizza_sales
- 
-3. Total Pizzas Sold
-SELECT SUM(quantity) AS Total_pizza_sold FROM pizza_sales
- 
-4. Total Orders
-SELECT COUNT(DISTINCT order_id) AS Total_Orders FROM pizza_sales
- 
-5. Average Pizzas Per Order
-SELECT CAST(CAST(SUM(quantity) AS DECIMAL(10,2)) / 
-CAST(COUNT(DISTINCT order_id) AS DECIMAL(10,2)) AS DECIMAL(10,2))
-AS Avg_Pizzas_per_order
-FROM pizza_sales
- 
-B. Daily Trend for Total Orders
-SELECT DATENAME(DW, order_date) AS order_day, COUNT(DISTINCT order_id) AS total_orders 
-FROM pizza_sales
-GROUP BY DATENAME(DW, order_date)
-Output:
- 
-C. Hourly Trend for Orders
-SELECT DATEPART(HOUR, order_time) as order_hours, COUNT(DISTINCT order_id) as total_orders
-from pizza_sales
-group by DATEPART(HOUR, order_time)
-order by DATEPART(HOUR, order_time)
-Output
- 
-D. % of Sales by Pizza Category
-SELECT pizza_category, CAST(SUM(total_price) AS DECIMAL(10,2)) as total_revenue,
-CAST(SUM(total_price) * 100 / (SELECT SUM(total_price) from pizza_sales) AS DECIMAL(10,2)) AS PCT
-FROM pizza_sales
-GROUP BY pizza_category
-Output
- 
-E. % of Sales by Pizza Size
-SELECT pizza_size, CAST(SUM(total_price) AS DECIMAL(10,2)) as total_revenue,
-CAST(SUM(total_price) * 100 / (SELECT SUM(total_price) from pizza_sales) AS DECIMAL(10,2)) AS PCT
-FROM pizza_sales
-GROUP BY pizza_size
-ORDER BY pizza_size
-Output
- 
+use PIZZA_DB;
 
-F. Total Pizzas Sold by Pizza Category
-SELECT pizza_category, SUM(quantity) as Total_Quantity_Sold
-FROM pizza_sales
-WHERE MONTH(order_date) = 2
-GROUP BY pizza_category
-ORDER BY Total_Quantity_Sold DESC
-Output
- 
-G. Top 5 Best Sellers by Total Pizzas Sold
-SELECT Top 5 pizza_name, SUM(quantity) AS Total_Pizza_Sold
-FROM pizza_sales
-GROUP BY pizza_name
-ORDER BY Total_Pizza_Sold DESC
-Output
- 
+select * from pizza_sales;
 
+--total revenue
+select sum(total_price) as total_revenue from pizza_sales;
 
+--average order value
+select sum(total_price)/count(DISTINCT order_id) as avg_orders from pizza_sales;
 
+--total pizzas sold
+select sum(quantity) as total_pizzas_sold from pizza_sales;
 
-H. Bottom 5 Best Sellers by Total Pizzas Sold
-SELECT TOP 5 pizza_name, SUM(quantity) AS Total_Pizza_Sold
-FROM pizza_sales
-GROUP BY pizza_name
-ORDER BY Total_Pizza_Sold ASC
-Output
- 
+--total orders
+select count(distinct order_id) as total_orders from pizza_sales;
 
-NOTE
-If you want to apply the Month, Quarter, Week filters to the above queries you can use WHERE clause. Follow some of below examples
-SELECT DATENAME(DW, order_date) AS order_day, COUNT(DISTINCT order_id) AS total_orders 
-FROM pizza_sales
-WHERE MONTH(order_date) = 1
-GROUP BY DATENAME(DW, order_date)
+select cast(cast(sum(quantity) as decimal(10,2))/
+cast(count(DISTINCT order_id) as decimal(10,2))  as decimal(10,2)) from pizza_sales ;
 
-*Here MONTH(order_date) = 1 indicates that the output is for the month of January. MONTH(order_date) = 4 indicates output for Month of April.
+--Daily Trend
+select datename(DW,order_date) as order_day,count(DISTINCT order_id) as total_orders
+from pizza_sales group by datename(DW,order_date) ;
 
-SELECT DATENAME(DW, order_date) AS order_day, COUNT(DISTINCT order_id) AS total_orders 
-FROM pizza_sales
-WHERE DATEPART(QUARTER, order_date) = 1
-GROUP BY DATENAME(DW, order_date)
+--Hourly Trend
+select datepart(HOUR,order_time) as order_hours, count(DISTINCT order_id) as total_orders
+from pizza_sales 
+group by datepart(HOUR,order_time)
+order by datepart(HOUR,order_time) ;
 
-*Here DATEPART(QUARTER, order_date) = 1 indicates that the output is for the Quarter 1. MONTH(order_date) = 3 indicates output for Quarter 3.
+--Percentage of sales by pizza category
+select pizza_category,sum(total_price)as total_sales,sum(total_price)*100/
+(select sum(total_price) from pizza_sales where month(order_date)=1) as pct from
+pizza_sales where month(order_date)=1
+group by pizza_category
+
+--percentage of sales by pizza size
+select pizza_size,sum(total_price)as total_sales,sum(total_price)*100/
+(select sum(total_price) from pizza_sales where datepart(quarter,order_date )=1) as pct from
+pizza_sales 
+where datepart(quarter,order_date )=1
+group by  pizza_size
+order by pizza_size
+
+--total pizzas sold by pizza category
+select pizza_category,sum(quantity) as total_sales from pizza_sales
+group by pizza_category;
+
+--top 5 best sellers by total pizzas sold
+select TOP 5 pizza_name_id,sum(quantity) as total_sales from pizza_sales
+group by pizza_name_id
+order by  total_sales desc;
+
+--bottom 5 worst sellers by total pizzas sold
+select TOP 5 pizza_name_id,sum(quantity) as total_sales from pizza_sales
+group by pizza_name_id
+order by  total_sales asc;
+
+--updating total_price
+UPDATE pizza_sales
+SET total_price = total_price + 100
+WHERE order_id = 1;
+
+select * from pizza_sales;
