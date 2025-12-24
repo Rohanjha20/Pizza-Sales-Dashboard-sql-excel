@@ -29,6 +29,9 @@ This project analyzes pizza sales data using SQL Server and presents business in
 3. Build Pivot Tables and charts
 4. Design an interactive dashboard with slicers and timeline
 
+## 🔗 Dashboard Preview
+https://www.linkedin.com/posts/rohan-jha-7604b12b8_dataanalytics-sql-exceldashboard-activity-7409269034128633856-F9KL?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEw_dfgBEZ79TpJ_On90n0k440h3JIFn9DE
+
 ## How to Use
 1. Run SQL queries in SQL Server
 2. Export query results to Excel
